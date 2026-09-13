@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 @RestController
-@RequestMapping(path = "/backend/api/v1")
+@RequestMapping(path = "/backend/api/v1/storage")
 public class StorageController {
 
     private final StorageService storageService;

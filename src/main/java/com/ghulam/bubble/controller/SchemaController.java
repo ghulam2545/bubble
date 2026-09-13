@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping(path = "/backend/api/v1")
+@RequestMapping(path = "/backend/api/v1/schemas")
 public class SchemaController {
 
     private final SchemaService schemaService;

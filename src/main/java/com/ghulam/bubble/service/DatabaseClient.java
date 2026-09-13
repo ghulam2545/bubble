@@ -33,6 +33,15 @@ public class DatabaseClient {
                 .queryForObject(sql, params, rowMapper);
     }
 
+    public <T> T queryForObject(
+            String sql,
+            SqlParameterSource params,
+            Class<T> type) {
+
+        return connectionService.jdbc()
+                .queryForObject(sql, params, type);
+    }
+
     public <T> List<T> query(
             String sql,
             SqlParameterSource params,
