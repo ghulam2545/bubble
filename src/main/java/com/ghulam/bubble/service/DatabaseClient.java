@@ -5,6 +5,7 @@ import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.Map;
 
 @Component
 public class DatabaseClient {
@@ -40,6 +41,15 @@ public class DatabaseClient {
 
         return connectionService.jdbc()
                 .queryForObject(sql, params, type);
+    }
+
+    public <T> T queryForObject(
+            String sql,
+            Map<String, ?> params,
+            RowMapper<T> rowMapper) {
+
+        return connectionService.jdbc()
+                .queryForObject(sql, params, rowMapper);
     }
 
     public <T> List<T> query(
