@@ -1,5 +1,6 @@
 package com.ghulam.bubble.service;
 
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.stereotype.Component;
 
@@ -21,5 +22,23 @@ public class DatabaseClient {
 
         return connectionService.jdbc()
                 .queryForList(sql, params, type);
+    }
+
+    public <T> T queryForObject(
+            String sql,
+            SqlParameterSource params,
+            RowMapper<T> rowMapper) {
+
+        return connectionService.jdbc()
+                .queryForObject(sql, params, rowMapper);
+    }
+
+    public <T> List<T> query(
+            String sql,
+            SqlParameterSource params,
+            RowMapper<T> rowMapper) {
+
+        return connectionService.jdbc()
+                .query(sql, params, rowMapper);
     }
 }
