@@ -1,0 +1,25 @@
+package com.ghulam.bubble.service;
+
+import org.springframework.jdbc.core.namedparam.SqlParameterSource;
+import org.springframework.stereotype.Component;
+
+import java.util.List;
+
+@Component
+public class DatabaseClient {
+
+    private final ConnectionService connectionService;
+
+    public DatabaseClient(ConnectionService connectionService) {
+        this.connectionService = connectionService;
+    }
+
+    public <T> List<T> queryForList(
+            String sql,
+            SqlParameterSource params,
+            Class<T> type) {
+
+        return connectionService.jdbc()
+                .queryForList(sql, params, type);
+    }
+}
