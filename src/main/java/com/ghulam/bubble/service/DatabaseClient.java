@@ -60,4 +60,13 @@ public class DatabaseClient {
         return connectionService.jdbc()
                 .query(sql, params, rowMapper);
     }
+
+    public <T> List<T> query(
+            String sql,
+            Map<String, ?> params,
+            RowMapper<T> rowMapper) {
+
+        return connectionService.jdbc()
+                .query(sql, params, rowMapper);
+    }
 }
