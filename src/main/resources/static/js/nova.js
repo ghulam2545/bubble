@@ -151,7 +151,8 @@ const Nova = (() => {
                 });
                 saveConn(cfg);
                 closeModal('connect-modal');
-                toast('Connected successfully', 'success');
+                toast('Connected successfully — loading…', 'success');
+                setTimeout(() => location.reload(), 800);
             } catch (err) {
                 toast('Connection failed: ' + err.message, 'error');
             } finally {
@@ -206,7 +207,26 @@ const Nova = (() => {
         _initSidebarActive();
         _renderConnWidget();
         _initConnectModal();
+        _maybePromptConnect();
     });
+
+    // ── Auto-prompt if not connected ─────────────────────────────────────────
+    function _maybePromptConnect() {
+        if (_conn) return;                          // already connected → do nothing
+
+        const banner = document.getElementById('connect-welcome-banner');
+        const hint   = document.getElementById('connect-modal-hint');
+
+        // Show the welcome banner (hidden by default)
+        if (banner) banner.style.display = 'block';
+
+        // Helpful hint in the footer
+        if (hint) hint.textContent = 'A database connection is required to use Nova.';
+
+        // Small delay so the page paints first, then the modal slides in smoothly
+        setTimeout(() => openModal('connect-modal'), 300);
+    }
+
 
     return {
         saveConn,
