@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Schemas — Nova</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" th:href="@{/css/styles.css}"/>
+
+</head>
+<body class="min-h-screen" data-page="schemas">
+<div class="app-shell">
+    <div th:replace="~{fragments/layout :: sidebar}"></div>
+    <main class="main-content">
+
+        <header class="topbar">
+            <div class="topbar-left">
+                <span class="topbar-title">Schemas</span>
+                <span class="topbar-sub">Database schema explorer</span>
+            </div>
+            <div class="topbar-actions">
+                <label style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text-muted);cursor:pointer">
+                    <input type="checkbox" id="include-system" style="accent-color:var(--accent)"/>
+                    Include system
+                </label>
+                <input class="form-input" id="schema-filter" type="text" placeholder="Filter schemas…"
+                       style="width:180px"/>
+                <button class="btn btn-primary btn-sm" onclick="Nova.openModal('connect-modal')">Connect</button>
+            </div>
+        </header>
+
+        <div class="page-body">
+            <div style="display:grid;grid-template-columns:1fr;gap:16px">
+
+                <!-- Schemas table -->
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">All Schemas</div>
+                    </div>
+                    <div class="data-table-wrap">
+                        <table class="data-table">
+                            <thead>
+                            <tr>
+                                <th>Schema</th>
+                                <th>Owner</th>
+                                <th>Tables</th>
+                                <th>Views</th>
+                                <th>Sequences</th>
+                                <th>Size</th>
+                            </tr>
+                            </thead>
+                            <tbody id="schemas-table-body">
+                            <tr>
+                                <td colspan="6" class="text-muted" style="padding:20px;text-align:center">Not
+                                    connected
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Schema detail pane -->
+                <div class="card hidden" id="schema-detail">
+                    <div class="card-header">
+                        <div>
+                            <div class="card-title">Schema: <span id="detail-schema-name"></span></div>
+                            <div class="card-subtitle">Objects in this schema</div>
+                        </div>
+                        <button class="btn btn-ghost btn-sm btn-icon"
+                                onclick="document.getElementById('schema-detail').classList.add('hidden')"
+                                style="font-size:16px">&#x2715;
+                        </button>
+                    </div>
+                    <div class="tab-bar">
+                        <div class="tab" data-tab="tables">Tables</div>
+                        <div class="tab" data-tab="views">Views</div>
+                        <div class="tab" data-tab="sequences">Sequences</div>
+                        <div class="tab" data-tab="functions">Functions</div>
+                        <div class="tab" data-tab="types">Types</div>
+                    </div>
+                    <div class="card-body">
+                        <div class="tab-panel" data-tab="tables">
+                            <div id="detail-tables"></div>
+                        </div>
+                        <div class="tab-panel" data-tab="views">
+                            <div id="detail-views"></div>
+                        </div>
+                        <div class="tab-panel" data-tab="sequences">
+                            <div id="detail-sequences"></div>
+                        </div>
+                        <div class="tab-panel" data-tab="functions">
+                            <div id="detail-functions"></div>
+                        </div>
+                        <div class="tab-panel" data-tab="types">
+                            <div id="detail-types"></div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </main>
+</div>
+
+<style>
+    .active-row {
+        background: rgba(99, 102, 241, .08) !important;
+    }
+</style>
+
+<div th:replace="~{fragments/layout :: connect-modal}"></div>
+<script th:src="@{/js/nova.js}"></script>
+<script th:src="@{/js/schemas.js}"></script>
+</body>
+</html>

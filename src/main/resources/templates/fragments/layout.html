@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<!-- ══ FRAGMENT: sidebar ══════════════════════════════════════════════ -->
+<aside th:fragment="sidebar" class="sidebar">
+    <a href="/" class="sidebar-logo" style="text-decoration:none">
+        <div class="logo-icon">N</div>
+        <span class="logo-name">Nova</span>
+    </a>
+    <nav class="sidebar-nav">
+        <p class="nav-section-label">Workspace</p>
+        <a href="/" class="nav-item" data-page="dashboard">
+            <svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+                <rect x="3" y="3" width="7" height="7" rx="1"/>
+                <rect x="14" y="3" width="7" height="7" rx="1"/>
+                <rect x="3" y="14" width="7" height="7" rx="1"/>
+                <rect x="14" y="14" width="7" height="7" rx="1"/>
+            </svg>
+            Dashboard
+        </a>
+        <a href="/schemas" class="nav-item" data-page="schemas">
+            <svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+                <ellipse cx="12" cy="6" rx="8" ry="3"/>
+                <path d="M4 6v6c0 1.657 3.582 3 8 3s8-1.343 8-3V6"/>
+                <path d="M4 12v6c0 1.657 3.582 3 8 3s8-1.343 8-3v-6"/>
+            </svg>
+            Schemas
+        </a>
+        <a href="/storage" class="nav-item" data-page="storage">
+            <svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+                <rect x="2" y="7" width="20" height="5" rx="1"/>
+                <path d="M2 12h20M6 9.5h.01M6 14.5h.01"/>
+                <rect x="2" y="12" width="20" height="5" rx="1"/>
+            </svg>
+            Storage
+        </a>
+        <a href="/activity" class="nav-item" data-page="activity">
+            <svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+                <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+            </svg>
+            Activity
+        </a>
+        <a href="/statistics" class="nav-item" data-page="statistics">
+            <svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+                <line x1="18" y1="20" x2="18" y2="10"/>
+                <line x1="12" y1="20" x2="12" y2="4"/>
+                <line x1="6" y1="20" x2="6" y2="14"/>
+            </svg>
+            Statistics
+        </a>
+        <p class="nav-section-label">Explore</p>
+        <a href="/extensions" class="nav-item" data-page="extensions">
+            <svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+                <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+            </svg>
+            Extensions
+        </a>
+        <a href="/indexes" class="nav-item" data-page="indexes">
+            <svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+                <line x1="8" y1="6" x2="21" y2="6"/>
+                <line x1="8" y1="12" x2="21" y2="12"/>
+                <line x1="8" y1="18" x2="21" y2="18"/>
+                <line x1="3" y1="6" x2="3.01" y2="6"/>
+                <line x1="3" y1="12" x2="3.01" y2="12"/>
+                <line x1="3" y1="18" x2="3.01" y2="18"/>
+            </svg>
+            Indexes
+        </a>
+        <a href="/queries" class="nav-item" data-page="queries">
+            <svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+                <circle cx="11" cy="11" r="8"/>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+            </svg>
+            Query Explorer
+        </a>
+    </nav>
+    <div class="sidebar-conn">
+        <div class="conn-card">
+            <div class="conn-status">
+                <span class="status-dot disconnected" id="conn-status-dot"></span>
+                <span id="conn-status-text">Not connected</span>
+            </div>
+            <p class="conn-host" id="conn-host-label">—</p>
+        </div>
+    </div>
+</aside>
+
+<!-- ══ FRAGMENT: connect-modal ════════════════════════════════════════ -->
+<div th:fragment="connect-modal" id="connect-modal" class="modal-overlay">
+    <div class="modal">
+        <div class="modal-header">
+            <span class="modal-title">Connect to PostgreSQL</span>
+            <button type="button" class="btn btn-ghost btn-sm btn-icon" onclick="Nova.closeModal('connect-modal')"
+                    style="font-size:16px;line-height:1">&#x2715;
+            </button>
+        </div>
+        <form id="connect-form">
+            <div class="modal-body">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Host</label>
+                        <input class="form-input" type="text" name="host" placeholder="localhost" required/>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Port</label>
+                        <input class="form-input" type="number" name="port" value="5432" required/>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Database</label>
+                    <input class="form-input" type="text" name="database" placeholder="postgres" required/>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Username</label>
+                        <input class="form-input" type="text" name="username" placeholder="postgres" required/>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Password</label>
+                        <input class="form-input" type="password" name="password"
+                               placeholder="&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;"/>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-ghost" onclick="Nova.closeModal('connect-modal')">Cancel</button>
+                <button type="submit" class="btn btn-primary">Connect</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+</html>

@@ -1,1 +1,198 @@
-hello sir!
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Dashboard — Nova</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" th:href="@{/css/styles.css}"/>
+
+</head>
+<body class="min-h-screen" data-page="dashboard">
+<div class="app-shell">
+    <div th:replace="~{fragments/layout :: sidebar}"></div>
+    <main class="main-content">
+
+        <!-- Topbar -->
+        <header class="topbar">
+            <div class="topbar-left">
+                <span class="topbar-title">Dashboard</span>
+                <span class="topbar-sub">PostgreSQL database overview</span>
+            </div>
+            <div class="topbar-actions">
+                <button class="btn btn-ghost btn-sm" onclick="location.reload()">&#8635; Refresh</button>
+                <button class="btn btn-primary btn-sm" onclick="Nova.openModal('connect-modal')">Connect</button>
+            </div>
+        </header>
+
+        <!-- Content -->
+        <div class="page-body">
+
+            <!-- Stat cards -->
+            <div class="stat-grid" style="grid-template-columns:repeat(auto-fill,minmax(190px,1fr))">
+                <div class="stat-card" style="--ac:#818cf8">
+                    <div class="stat-label">Database</div>
+                    <div class="stat-value" id="stat-db-name" style="font-size:18px">—</div>
+                    <div class="stat-hint" id="stat-pg-version">PostgreSQL</div>
+                </div>
+                <div class="stat-card" style="--ac:#34d399">
+                    <div class="stat-label">Active Sessions</div>
+                    <div class="stat-value stat-ok" id="stat-connections">—</div>
+                    <div class="stat-hint">concurrent connections</div>
+                </div>
+                <div class="stat-card" style="--ac:#60a5fa">
+                    <div class="stat-label">Total Size</div>
+                    <div class="stat-value" id="stat-size">—</div>
+                    <div class="stat-hint">on-disk footprint</div>
+                </div>
+                <div class="stat-card" style="--ac:#a78bfa">
+                    <div class="stat-label">Cache Hit Ratio</div>
+                    <div class="stat-value" id="stat-cache-hit">—</div>
+                    <div class="stat-hint">buffer cache efficiency</div>
+                </div>
+                <div class="stat-card" style="--ac:#fbbf24">
+                    <div class="stat-label">Deadlocks</div>
+                    <div class="stat-value" id="stat-deadlocks">—</div>
+                    <div class="stat-hint">since stats reset</div>
+                </div>
+                <div class="stat-card" style="--ac:#f472b6">
+                    <div class="stat-label">Commits</div>
+                    <div class="stat-value" id="stat-tps">—</div>
+                    <div class="stat-hint">total transactions</div>
+                </div>
+            </div>
+
+            <!-- Main grid -->
+            <div style="display:grid;grid-template-columns:1fr 300px;gap:16px;margin-top:20px">
+
+                <!-- Activity chart -->
+                <div class="card">
+                    <div class="card-header">
+                        <div>
+                            <div class="card-title">Schema Storage Distribution</div>
+                            <div class="card-subtitle">Size per schema</div>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div id="activity-chart"
+                             style="display:flex;align-items:flex-end;gap:6px;height:160px;padding:8px 0">
+                            <div class="bar-col"
+                                 style="flex:1;background:rgba(99,102,241,.35);border-radius:4px 4px 0 0;transition:height .4s;height:20%"></div>
+                            <div class="bar-col"
+                                 style="flex:1;background:rgba(99,102,241,.35);border-radius:4px 4px 0 0;transition:height .4s;height:20%"></div>
+                            <div class="bar-col"
+                                 style="flex:1;background:rgba(99,102,241,.35);border-radius:4px 4px 0 0;transition:height .4s;height:20%"></div>
+                            <div class="bar-col"
+                                 style="flex:1;background:rgba(99,102,241,.35);border-radius:4px 4px 0 0;transition:height .4s;height:20%"></div>
+                            <div class="bar-col"
+                                 style="flex:1;background:rgba(99,102,241,.35);border-radius:4px 4px 0 0;transition:height .4s;height:20%"></div>
+                            <div class="bar-col"
+                                 style="flex:1;background:rgba(99,102,241,.35);border-radius:4px 4px 0 0;transition:height .4s;height:20%"></div>
+                            <div class="bar-col"
+                                 style="flex:1;background:rgba(99,102,241,.35);border-radius:4px 4px 0 0;transition:height .4s;height:20%"></div>
+                            <div class="bar-col"
+                                 style="flex:1;background:rgba(99,102,241,.35);border-radius:4px 4px 0 0;transition:height .4s;height:20%"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- DB Info -->
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">Connection</div>
+                        <span id="db-status-badge"><span class="badge badge-muted">● Disconnected</span></span>
+                    </div>
+                    <div class="divider"></div>
+                    <div style="padding:0">
+                        <div style="padding:11px 16px;border-bottom:1px solid var(--border)">
+                            <div class="text-muted" style="font-size:11px">Host</div>
+                            <div class="mono" style="font-size:12px;margin-top:3px" id="db-info-host">—</div>
+                        </div>
+                        <div style="padding:11px 16px;border-bottom:1px solid var(--border)">
+                            <div class="text-muted" style="font-size:11px">Port</div>
+                            <div class="mono" style="font-size:12px;margin-top:3px" id="db-info-port">—</div>
+                        </div>
+                        <div style="padding:11px 16px">
+                            <div class="text-muted" style="font-size:11px">Database</div>
+                            <div class="mono" style="font-size:12px;margin-top:3px" id="db-info-db">—</div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Active sessions -->
+            <div class="card" style="margin-top:16px">
+                <div class="card-header">
+                    <div>
+                        <div class="card-title">Active Sessions</div>
+                        <div class="card-subtitle">Currently running queries</div>
+                    </div>
+                    <a href="/activity" class="btn btn-ghost btn-sm">View all &#8594;</a>
+                </div>
+                <div class="data-table-wrap">
+                    <table class="data-table">
+                        <thead>
+                        <tr>
+                            <th>PID</th>
+                            <th>User</th>
+                            <th>State</th>
+                            <th>Query</th>
+                            <th>Duration</th>
+                        </tr>
+                        </thead>
+                        <tbody id="activity-table-body">
+                        <tr>
+                            <td colspan="5" class="text-muted" style="padding:20px;text-align:center">Not connected</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Largest relations -->
+            <div class="card" style="margin-top:16px">
+                <div class="card-header">
+                    <div>
+                        <div class="card-title">Largest Relations</div>
+                        <div class="card-subtitle">Top 5 by total size</div>
+                    </div>
+                    <a href="/storage" class="btn btn-ghost btn-sm">View all &#8594;</a>
+                </div>
+                <div class="data-table-wrap">
+                    <table class="data-table">
+                        <thead>
+                        <tr>
+                            <th>Relation</th>
+                            <th>Type</th>
+                            <th>Size</th>
+                            <th></th>
+                        </tr>
+                        </thead>
+                        <tbody id="largest-table-body">
+                        <tr>
+                            <td colspan="4" class="text-muted" style="padding:20px;text-align:center">Not connected</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </div>
+    </main>
+</div>
+
+<!-- Sidebar active link highlight -->
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        document.querySelectorAll('.nav-item[data-page]').forEach(el => {
+            el.classList.toggle('active', el.dataset.page === document.body.dataset.page);
+        });
+    });
+</script>
+
+<div th:replace="~{fragments/layout :: connect-modal}"></div>
+<script th:src="@{/js/nova.js}"></script>
+<script th:src="@{/js/dashboard.js}"></script>
+</body>
+</html>

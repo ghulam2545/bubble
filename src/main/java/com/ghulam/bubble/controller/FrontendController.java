@@ -10,4 +10,15 @@ public class FrontendController {
     public String index() {
         return "index";
     }
+
+    @GetMapping("/schemas")
+    public String schemas() {
+        return "schemas";
+    }
+
+    @GetMapping("/storage")
+    public String storage() {
+        return "storage";
+    }
 }
+

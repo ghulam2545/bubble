@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Storage — Nova</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" th:href="@{/css/styles.css}"/>
+
+</head>
+<body class="min-h-screen" data-page="storage">
+<div class="app-shell">
+    <div th:replace="~{fragments/layout :: sidebar}"></div>
+    <main class="main-content">
+
+        <header class="topbar">
+            <div class="topbar-left">
+                <span class="topbar-title">Storage</span>
+                <span class="topbar-sub">Disk usage across tables, indexes and schemas</span>
+            </div>
+            <div class="topbar-actions">
+                <button class="btn btn-primary btn-sm" onclick="Nova.openModal('connect-modal')">Connect</button>
+            </div>
+        </header>
+
+        <div class="page-body">
+
+            <!-- Summary stat cards -->
+            <div class="stat-grid">
+                <div class="stat-card" style="--ac:#818cf8">
+                    <div class="stat-label">Total Database Size</div>
+                    <div class="stat-value" id="storage-total-size">—</div>
+                    <div class="stat-hint">all data on disk</div>
+                </div>
+                <div class="stat-card" style="--ac:#34d399">
+                    <div class="stat-label">Tables Size</div>
+                    <div class="stat-value" id="storage-tables-size">—</div>
+                    <div class="stat-hint">heap + toast</div>
+                </div>
+                <div class="stat-card" style="--ac:#60a5fa">
+                    <div class="stat-label">Indexes Size</div>
+                    <div class="stat-value" id="storage-index-size">—</div>
+                    <div class="stat-hint">all indexes combined</div>
+                </div>
+            </div>
+
+            <!-- Tabs -->
+            <div class="card" id="storage-tabs" style="margin-top:20px">
+                <div class="tab-bar">
+                    <div class="tab" data-tab="schemas">By Schema</div>
+                    <div class="tab" data-tab="tables">Tables</div>
+                    <div class="tab" data-tab="indexes">Indexes</div>
+                    <div class="tab" data-tab="largest">Largest Relations</div>
+                </div>
+
+                <!-- Filters -->
+                <div style="display:flex;align-items:center;gap:10px;padding:10px 16px;border-bottom:1px solid var(--border)">
+                    <select class="form-input" id="storage-schema-filter" style="width:160px">
+                        <option value="">All schemas</option>
+                    </select>
+                    <select class="form-input" id="storage-table-limit" style="width:100px">
+                        <option value="20">Top 20</option>
+                        <option value="50" selected>Top 50</option>
+                        <option value="100">Top 100</option>
+                    </select>
+                </div>
+
+                <!-- By Schema -->
+                <div class="tab-panel" data-tab="schemas">
+                    <div class="data-table-wrap">
+                        <table class="data-table">
+                            <thead>
+                            <tr>
+                                <th>Schema</th>
+                                <th>Tables</th>
+                                <th>Indexes</th>
+                                <th>Total Size</th>
+                            </tr>
+                            </thead>
+                            <tbody id="schema-storage-body">
+                            <tr>
+                                <td colspan="4" class="text-muted" style="padding:20px;text-align:center">Not
+                                    connected
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Tables -->
+                <div class="tab-panel" data-tab="tables">
+                    <div class="data-table-wrap">
+                        <table class="data-table">
+                            <thead>
+                            <tr>
+                                <th>Schema</th>
+                                <th>Table</th>
+                                <th>Table Size</th>
+                                <th>Index Size</th>
+                                <th>Total Size</th>
+                            </tr>
+                            </thead>
+                            <tbody id="table-storage-body">
+                            <tr>
+                                <td colspan="5" class="text-muted" style="padding:20px;text-align:center">Not
+                                    connected
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Indexes -->
+                <div class="tab-panel" data-tab="indexes">
+                    <div class="data-table-wrap">
+                        <table class="data-table">
+                            <thead>
+                            <tr>
+                                <th>Schema</th>
+                                <th>Index</th>
+                                <th>Type</th>
+                                <th>Size</th>
+                            </tr>
+                            </thead>
+                            <tbody id="index-storage-body">
+                            <tr>
+                                <td colspan="4" class="text-muted" style="padding:20px;text-align:center">Not
+                                    connected
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Largest -->
+                <div class="tab-panel" data-tab="largest">
+                    <div class="data-table-wrap">
+                        <table class="data-table">
+                            <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Relation</th>
+                                <th>Type</th>
+                                <th>Total Size</th>
+                            </tr>
+                            </thead>
+                            <tbody id="largest-storage-body">
+                            <tr>
+                                <td colspan="4" class="text-muted" style="padding:20px;text-align:center">Not
+                                    connected
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </main>
+</div>
+
+<div th:replace="~{fragments/layout :: connect-modal}"></div>
+<script th:src="@{/js/nova.js}"></script>
+<script th:src="@{/js/storage.js}"></script>
+</body>
+</html>

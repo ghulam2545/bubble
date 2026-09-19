@@ -5,7 +5,7 @@ import lombok.Builder;
 @Builder
 public record ActivitySession(
         int pid,
-        String username,
+        String usename,
         String applicationName,
         String clientAddr,
         Integer clientPort,

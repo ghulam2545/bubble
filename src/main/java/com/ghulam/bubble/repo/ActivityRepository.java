@@ -23,7 +23,7 @@ public class ActivityRepository {
     private ActivitySession mapRow(ResultSet rs, int rowNum) throws SQLException {
         return ActivitySession.builder()
                 .pid(rs.getInt("pid"))
-                .username(rs.getString("username"))
+                .usename(rs.getString("usename"))
                 .applicationName(rs.getString("application_name"))
                 .clientAddr(rs.getString("client_addr"))
                 .clientPort(rs.getObject("client_port") != null ? rs.getInt("client_port") : null)
