@@ -20,5 +20,20 @@ public class FrontendController {
     public String storage() {
         return "storage";
     }
+
+    @GetMapping("/system")
+    public String system() {
+        return "system";
+    }
+
+    @GetMapping("/statistics")
+    public String statistics() {
+        return "statistics";
+    }
+
+    @GetMapping("/queries")
+    public String queries() {
+        return "queries";
+    }
 }
 

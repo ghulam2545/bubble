@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>System — Nova</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" th:href="@{/css/styles.css}"/>
+</head>
+<body class="min-h-screen" data-page="system">
+<div class="app-shell">
+    <div th:replace="~{fragments/layout :: sidebar}"></div>
+    <main class="main-content">
+
+        <header class="topbar">
+            <div class="topbar-left">
+                <span class="topbar-title">System</span>
+                <span class="topbar-sub">Database health, version &amp; connection info</span>
+            </div>
+            <div class="topbar-actions">
+                <button class="btn btn-ghost btn-sm" onclick="SystemPage.refresh()">Refresh</button>
+                <button class="btn btn-primary btn-sm" onclick="Nova.openModal('connect-modal')">Connect</button>
+            </div>
+        </header>
+
+        <div class="page-body">
+
+            <!-- Stat cards -->
+            <div class="stat-grid">
+                <div class="stat-card" style="--ac:#34d399">
+                    <div class="stat-label">Status</div>
+                    <div class="stat-value" id="sys-status">—</div>
+                    <div class="stat-hint">database health</div>
+                </div>
+                <div class="stat-card" style="--ac:#818cf8">
+                    <div class="stat-label">Uptime</div>
+                    <div class="stat-value" id="sys-uptime">—</div>
+                    <div class="stat-hint">since last restart</div>
+                </div>
+                <div class="stat-card" style="--ac:#60a5fa">
+                    <div class="stat-label">Connections</div>
+                    <div class="stat-value" id="sys-connections">—</div>
+                    <div class="stat-hint">active / max</div>
+                </div>
+                <div class="stat-card" style="--ac:#f59e0b">
+                    <div class="stat-label">Timezone</div>
+                    <div class="stat-value" id="sys-timezone" style="font-size:18px">—</div>
+                    <div class="stat-hint">server timezone</div>
+                </div>
+            </div>
+
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:20px">
+
+                <!-- Database Info card -->
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">Database Info</div>
+                    </div>
+                    <div class="card-body">
+                        <table class="data-table">
+                            <tbody id="sys-db-info-body">
+                            <tr>
+                                <td colspan="2" class="text-muted" style="padding:20px;text-align:center">Not
+                                    connected
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Connection Pool card -->
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">Connection Pool</div>
+                    </div>
+                    <div class="card-body">
+                        <table class="data-table">
+                            <tbody id="sys-pool-body">
+                            <tr>
+                                <td colspan="2" class="text-muted" style="padding:20px;text-align:center">Not
+                                    connected
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Version info -->
+            <div class="card" style="margin-top:16px">
+                <div class="card-header">
+                    <div class="card-title">PostgreSQL Version</div>
+                </div>
+                <div class="card-body">
+                    <div id="sys-version-text" class="text-muted"
+                         style="font-family:monospace;font-size:13px;padding:8px 0">—
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </main>
+</div>
+
+<div th:replace="~{fragments/layout :: connect-modal}"></div>
+<script th:src="@{/js/nova.js}"></script>
+<script th:src="@{/js/system.js}"></script>
+</body>
+</html>

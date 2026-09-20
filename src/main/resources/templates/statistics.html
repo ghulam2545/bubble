@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Statistics — Nova</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" th:href="@{/css/styles.css}"/>
+</head>
+<body class="min-h-screen" data-page="statistics">
+<div class="app-shell">
+    <div th:replace="~{fragments/layout :: sidebar}"></div>
+    <main class="main-content">
+
+        <header class="topbar">
+            <div class="topbar-left">
+                <span class="topbar-title">Statistics</span>
+                <span class="topbar-sub">Table and database-level pg_stat data</span>
+            </div>
+            <div class="topbar-actions">
+                <input class="form-input" id="stats-filter" type="text" placeholder="Filter tables…"
+                       style="width:180px"/>
+                <button class="btn btn-primary btn-sm" onclick="Nova.openModal('connect-modal')">Connect</button>
+            </div>
+        </header>
+
+        <div class="page-body">
+
+            <!-- Database-level stat cards -->
+            <div class="stat-grid">
+                <div class="stat-card" style="--ac:#818cf8">
+                    <div class="stat-label">Cache Hit Ratio</div>
+                    <div class="stat-value" id="stat-cache-hit">—</div>
+                    <div class="stat-hint">blks_hit / (blks_hit + blks_read)</div>
+                </div>
+                <div class="stat-card" style="--ac:#34d399">
+                    <div class="stat-label">Commits</div>
+                    <div class="stat-value" id="stat-commits">—</div>
+                    <div class="stat-hint">xact_commit total</div>
+                </div>
+                <div class="stat-card" style="--ac:#f87171">
+                    <div class="stat-label">Rollbacks</div>
+                    <div class="stat-value" id="stat-rollbacks">—</div>
+                    <div class="stat-hint">xact_rollback total</div>
+                </div>
+                <div class="stat-card" style="--ac:#f59e0b">
+                    <div class="stat-label">Deadlocks</div>
+                    <div class="stat-value" id="stat-deadlocks">—</div>
+                    <div class="stat-hint">since stats reset</div>
+                </div>
+            </div>
+
+            <!-- Tabs -->
+            <div class="card" id="stats-tabs" style="margin-top:20px">
+                <div class="tab-bar">
+                    <div class="tab" data-tab="tables">Table Stats</div>
+                    <div class="tab" data-tab="database">Database Stats</div>
+                </div>
+
+                <!-- Table Statistics -->
+                <div class="tab-panel" data-tab="tables">
+                    <div class="data-table-wrap">
+                        <table class="data-table">
+                            <thead>
+                            <tr>
+                                <th>Schema</th>
+                                <th>Table</th>
+                                <th>Seq Scans</th>
+                                <th>Idx Scans</th>
+                                <th>Live Tuples</th>
+                                <th>Dead Tuples</th>
+                                <th>Inserts</th>
+                                <th>Updates</th>
+                                <th>Deletes</th>
+                                <th>Last Vacuum</th>
+                            </tr>
+                            </thead>
+                            <tbody id="stats-table-body">
+                            <tr>
+                                <td colspan="10" class="text-muted" style="padding:20px;text-align:center">Not
+                                    connected
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Database Statistics -->
+                <div class="tab-panel" data-tab="database">
+                    <div style="padding:16px">
+                        <table class="data-table">
+                            <tbody id="stats-db-body">
+                            <tr>
+                                <td colspan="2" class="text-muted" style="padding:20px;text-align:center">Not
+                                    connected
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </main>
+</div>
+
+<div th:replace="~{fragments/layout :: connect-modal}"></div>
+<script th:src="@{/js/nova.js}"></script>
+<script th:src="@{/js/statistics.js}"></script>
+</body>
+</html>

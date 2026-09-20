@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Query Explorer — Nova</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" th:href="@{/css/styles.css}"/>
+</head>
+<body class="min-h-screen" data-page="queries">
+<div class="app-shell">
+    <div th:replace="~{fragments/layout :: sidebar}"></div>
+    <main class="main-content">
+
+        <header class="topbar">
+            <div class="topbar-left">
+                <span class="topbar-title">Query Explorer</span>
+                <span class="topbar-sub">pg_stat_statements analysis</span>
+            </div>
+            <div class="topbar-actions">
+                <button class="btn btn-primary btn-sm" onclick="Nova.openModal('connect-modal')">Connect</button>
+            </div>
+        </header>
+
+        <div class="page-body">
+
+            <!-- Tabs -->
+            <div class="card" id="query-tabs">
+                <div class="tab-bar">
+                    <div class="tab" data-tab="top">Top by Time</div>
+                    <div class="tab" data-tab="slow">Slowest</div>
+                    <div class="tab" data-tab="calls">Most Called</div>
+                    <div class="tab" data-tab="io">Top I/O</div>
+                    <div class="tab" data-tab="cpu">Top CPU</div>
+                    <div class="tab" data-tab="temp">Temp Usage</div>
+                </div>
+
+                <!-- Top by Time -->
+                <div class="tab-panel" data-tab="top">
+                    <div class="data-table-wrap">
+                        <table class="data-table">
+                            <thead>
+                            <tr>
+                                <th>Query</th>
+                                <th>Calls</th>
+                                <th>Total Time</th>
+                                <th>Mean Time</th>
+                                <th>Rows</th>
+                            </tr>
+                            </thead>
+                            <tbody id="q-top-body">
+                            <tr>
+                                <td colspan="5" class="text-muted" style="padding:20px;text-align:center">Not
+                                    connected
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Slowest -->
+                <div class="tab-panel" data-tab="slow">
+                    <div class="data-table-wrap">
+                        <table class="data-table">
+                            <thead>
+                            <tr>
+                                <th>Query</th>
+                                <th>Calls</th>
+                                <th>Max Time</th>
+                                <th>Mean Time</th>
+                                <th>Stddev</th>
+                            </tr>
+                            </thead>
+                            <tbody id="q-slow-body">
+                            <tr>
+                                <td colspan="5" class="text-muted" style="padding:20px;text-align:center">Not
+                                    connected
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Most Called -->
+                <div class="tab-panel" data-tab="calls">
+                    <div class="data-table-wrap">
+                        <table class="data-table">
+                            <thead>
+                            <tr>
+                                <th>Query</th>
+                                <th>Calls</th>
+                                <th>Total Time</th>
+                                <th>Rows</th>
+                                <th>Mean Time</th>
+                            </tr>
+                            </thead>
+                            <tbody id="q-calls-body">
+                            <tr>
+                                <td colspan="5" class="text-muted" style="padding:20px;text-align:center">Not
+                                    connected
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Top I/O -->
+                <div class="tab-panel" data-tab="io">
+                    <div class="data-table-wrap">
+                        <table class="data-table">
+                            <thead>
+                            <tr>
+                                <th>Query</th>
+                                <th>Calls</th>
+                                <th>Blks Read</th>
+                                <th>Blks Hit</th>
+                                <th>Read Time</th>
+                            </tr>
+                            </thead>
+                            <tbody id="q-io-body">
+                            <tr>
+                                <td colspan="5" class="text-muted" style="padding:20px;text-align:center">Not
+                                    connected
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Top CPU -->
+                <div class="tab-panel" data-tab="cpu">
+                    <div class="data-table-wrap">
+                        <table class="data-table">
+                            <thead>
+                            <tr>
+                                <th>Query</th>
+                                <th>Calls</th>
+                                <th>Total Time</th>
+                                <th>Mean Time</th>
+                                <th>Rows</th>
+                            </tr>
+                            </thead>
+                            <tbody id="q-cpu-body">
+                            <tr>
+                                <td colspan="5" class="text-muted" style="padding:20px;text-align:center">Not
+                                    connected
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Temp Usage -->
+                <div class="tab-panel" data-tab="temp">
+                    <div class="data-table-wrap">
+                        <table class="data-table">
+                            <thead>
+                            <tr>
+                                <th>Query</th>
+                                <th>Calls</th>
+                                <th>Temp Blks Read</th>
+                                <th>Temp Blks Written</th>
+                                <th>Mean Time</th>
+                            </tr>
+                            </thead>
+                            <tbody id="q-temp-body">
+                            <tr>
+                                <td colspan="5" class="text-muted" style="padding:20px;text-align:center">Not
+                                    connected
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </main>
+</div>
+
+<!-- Query detail modal -->
+<div id="query-detail-modal" class="modal-overlay">
+    <div class="modal" style="max-width:700px">
+        <div class="modal-header">
+            <span class="modal-title">Query Detail</span>
+            <button type="button" class="btn btn-ghost btn-sm btn-icon" onclick="Nova.closeModal('query-detail-modal')"
+                    style="font-size:16px;line-height:1">&#x2715;
+            </button>
+        </div>
+        <div class="modal-body">
+            <pre id="query-detail-sql"
+                 style="white-space:pre-wrap;word-break:break-word;font-family:monospace;font-size:12px;padding:12px;border-radius:6px;overflow:auto;max-height:260px"></pre>
+            <table class="data-table" style="margin-top:12px">
+                <tbody id="query-detail-meta"></tbody>
+            </table>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-ghost" onclick="Nova.closeModal('query-detail-modal')">Close</button>
+        </div>
+    </div>
+</div>
+
+<div th:replace="~{fragments/layout :: connect-modal}"></div>
+<script th:src="@{/js/nova.js}"></script>
+<script th:src="@{/js/queries.js}"></script>
+</body>
+</html>
