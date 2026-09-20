@@ -14,4 +14,12 @@ public final class AppSetting {
     public static void LOGGER(String message) {
         log.info(LOG_SEPARATOR + "{}", message);
     }
+
+    /**
+     * {@code Note:} The method name intentionally uses an unconventional naming style
+     * to make this utility method easily identifiable as a logger.
+     */
+    public static void LOGGER(String s, Throwable throwable) {
+        log.info("{}", String.format(LOG_SEPARATOR + "%s", s), throwable);
+    }
 }
