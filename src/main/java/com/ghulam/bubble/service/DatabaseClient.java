@@ -16,6 +16,7 @@ public class DatabaseClient {
         this.connectionService = connectionService;
     }
 
+    @SuppressWarnings("SqlSourceToSinkFlow")
     public <T> List<T> queryForList(
             String sql,
             SqlParameterSource params,
@@ -25,6 +26,7 @@ public class DatabaseClient {
                 .queryForList(sql, params, type);
     }
 
+    @SuppressWarnings("SqlSourceToSinkFlow")
     public <T> T queryForObject(
             String sql,
             SqlParameterSource params,
@@ -34,6 +36,7 @@ public class DatabaseClient {
                 .queryForObject(sql, params, rowMapper);
     }
 
+    @SuppressWarnings("SqlSourceToSinkFlow")
     public <T> T queryForObject(
             String sql,
             SqlParameterSource params,
@@ -43,6 +46,7 @@ public class DatabaseClient {
                 .queryForObject(sql, params, type);
     }
 
+    @SuppressWarnings("SqlSourceToSinkFlow")
     public <T> T queryForObject(
             String sql,
             Map<String, ?> params,
@@ -52,6 +56,7 @@ public class DatabaseClient {
                 .queryForObject(sql, params, rowMapper);
     }
 
+    @SuppressWarnings("SqlSourceToSinkFlow")
     public <T> T queryForObject(
             String sql,
             Map<String, ?> params,
@@ -61,6 +66,7 @@ public class DatabaseClient {
                 .queryForObject(sql, params, type);
     }
 
+    @SuppressWarnings("SqlSourceToSinkFlow")
     public <T> List<T> query(
             String sql,
             SqlParameterSource params,
@@ -70,6 +76,7 @@ public class DatabaseClient {
                 .query(sql, params, rowMapper);
     }
 
+    @SuppressWarnings("SqlSourceToSinkFlow")
     public <T> List<T> query(
             String sql,
             Map<String, ?> params,
