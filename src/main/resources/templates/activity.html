@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Activity — Nova</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" th:href="@{/css/styles.css}"/>
+</head>
+<body class="min-h-screen" data-page="activity">
+<div class="app-shell">
+    <div th:replace="~{fragments/layout :: sidebar}"></div>
+    <main class="main-content">
+
+        <header class="topbar">
+            <div class="topbar-left">
+                <span class="topbar-title">Activity</span>
+                <span class="topbar-sub">Live sessions from pg_stat_activity</span>
+            </div>
+            <div class="topbar-actions">
+                <button class="btn btn-ghost btn-sm" onclick="ActivityPage.refresh()">Refresh</button>
+                <button class="btn btn-primary btn-sm" onclick="Nova.openModal('connect-modal')">Connect</button>
+            </div>
+        </header>
+
+        <div class="page-body">
+
+            <!-- Stat cards -->
+            <div class="stat-grid">
+                <div class="stat-card" style="--ac:#34d399">
+                    <div class="stat-label">Active</div>
+                    <div class="stat-value" id="act-active-count">—</div>
+                    <div class="stat-hint">executing queries</div>
+                </div>
+                <div class="stat-card" style="--ac:#60a5fa">
+                    <div class="stat-label">Idle</div>
+                    <div class="stat-value" id="act-idle-count">—</div>
+                    <div class="stat-hint">idle connections</div>
+                </div>
+                <div class="stat-card" style="--ac:#f59e0b">
+                    <div class="stat-label">Waiting</div>
+                    <div class="stat-value" id="act-waiting-count">—</div>
+                    <div class="stat-hint">blocked on locks</div>
+                </div>
+                <div class="stat-card" style="--ac:#f87171">
+                    <div class="stat-label">Long Running</div>
+                    <div class="stat-value" id="act-long-count">—</div>
+                    <div class="stat-hint">&gt; 30s duration</div>
+                </div>
+            </div>
+
+            <!-- Tabs -->
+            <div class="card" id="activity-tabs" style="margin-top:20px">
+                <div class="tab-bar">
+                    <div class="tab" data-tab="all">All</div>
+                    <div class="tab" data-tab="active">Active</div>
+                    <div class="tab" data-tab="idle">Idle</div>
+                    <div class="tab" data-tab="waiting">Waiting</div>
+                    <div class="tab" data-tab="long">Long Running</div>
+                </div>
+
+                <!-- shared column structure for all tabs -->
+                <div class="tab-panel" data-tab="all">
+                    <div class="data-table-wrap">
+                        <table class="data-table">
+                            <thead>
+                            <tr>
+                                <th>PID</th>
+                                <th>User</th>
+                                <th>App</th>
+                                <th>Client</th>
+                                <th>State</th>
+                                <th>Wait</th>
+                                <th>Duration</th>
+                                <th>Query</th>
+                            </tr>
+                            </thead>
+                            <tbody id="act-all-body">
+                            <tr>
+                                <td colspan="8" class="text-muted" style="padding:20px;text-align:center">Not
+                                    connected
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="tab-panel" data-tab="active">
+                    <div class="data-table-wrap">
+                        <table class="data-table">
+                            <thead>
+                            <tr>
+                                <th>PID</th>
+                                <th>User</th>
+                                <th>App</th>
+                                <th>Client</th>
+                                <th>State</th>
+                                <th>Wait</th>
+                                <th>Duration</th>
+                                <th>Query</th>
+                            </tr>
+                            </thead>
+                            <tbody id="act-active-body">
+                            <tr>
+                                <td colspan="8" class="text-muted" style="padding:20px;text-align:center">Not
+                                    connected
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="tab-panel" data-tab="idle">
+                    <div class="data-table-wrap">
+                        <table class="data-table">
+                            <thead>
+                            <tr>
+                                <th>PID</th>
+                                <th>User</th>
+                                <th>App</th>
+                                <th>Client</th>
+                                <th>State</th>
+                                <th>Wait</th>
+                                <th>Duration</th>
+                                <th>Query</th>
+                            </tr>
+                            </thead>
+                            <tbody id="act-idle-body">
+                            <tr>
+                                <td colspan="8" class="text-muted" style="padding:20px;text-align:center">Not
+                                    connected
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="tab-panel" data-tab="waiting">
+                    <div class="data-table-wrap">
+                        <table class="data-table">
+                            <thead>
+                            <tr>
+                                <th>PID</th>
+                                <th>User</th>
+                                <th>App</th>
+                                <th>Client</th>
+                                <th>State</th>
+                                <th>Wait Type</th>
+                                <th>Wait Event</th>
+                                <th>Query</th>
+                            </tr>
+                            </thead>
+                            <tbody id="act-waiting-body">
+                            <tr>
+                                <td colspan="8" class="text-muted" style="padding:20px;text-align:center">Not
+                                    connected
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="tab-panel" data-tab="long">
+                    <div class="data-table-wrap">
+                        <table class="data-table">
+                            <thead>
+                            <tr>
+                                <th>PID</th>
+                                <th>User</th>
+                                <th>App</th>
+                                <th>Client</th>
+                                <th>State</th>
+                                <th>Duration</th>
+                                <th>Query</th>
+                            </tr>
+                            </thead>
+                            <tbody id="act-long-body">
+                            <tr>
+                                <td colspan="7" class="text-muted" style="padding:20px;text-align:center">Not
+                                    connected
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </main>
+</div>
+
+<!-- Session detail modal -->
+<div id="activity-detail-modal" class="modal-overlay">
+    <div class="modal" style="max-width:900px;width:95vw">
+        <div class="modal-header">
+            <span class="modal-title">Session Detail</span>
+            <button type="button" class="btn btn-ghost btn-sm btn-icon"
+                    onclick="Nova.closeModal('activity-detail-modal')"
+                    style="font-size:16px;line-height:1">&#x2715;
+            </button>
+        </div>
+        <div class="modal-body">
+            <!-- Query -->
+            <div style="margin-bottom:14px">
+                <div style="font-size:11px;font-weight:600;color:var(--text-muted);text-transform:uppercase;
+                            letter-spacing:.06em;margin-bottom:6px">Query
+                </div>
+                <pre id="act-detail-query"
+                     style="white-space:pre-wrap;word-break:break-word;font-family:monospace;font-size:12px;
+                            background:var(--bg-elevated);padding:12px;border-radius:6px;
+                            overflow:auto;max-height:180px;margin:0"></pre>
+            </div>
+            <!-- 3-column field grid -->
+            <div style="font-size:11px;font-weight:600;color:var(--text-muted);text-transform:uppercase;
+                        letter-spacing:.06em;margin-bottom:8px">Session Info
+            </div>
+            <div id="act-detail-meta"
+                 style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px 20px"></div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-ghost" onclick="Nova.closeModal('activity-detail-modal')">Close</button>
+        </div>
+    </div>
+</div>
+
+<div th:replace="~{fragments/layout :: connect-modal}"></div>
+<script th:src="@{/js/nova.js}"></script>
+<script th:src="@{/js/activity.js}"></script>
+</body>
+</html>

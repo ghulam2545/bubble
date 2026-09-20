@@ -35,5 +35,10 @@ public class FrontendController {
     public String queries() {
         return "queries";
     }
+
+    @GetMapping("/activity")
+    public String activity() {
+        return "activity";
+    }
 }
 
