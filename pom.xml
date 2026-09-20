@@ -11,8 +11,8 @@
     <groupId>com.ghulam</groupId>
     <artifactId>nova</artifactId>
     <version>0.0.1</version>
-    <name>bubble</name>
-    <description>bubble</description>
+    <name>nova</name>
+    <description>nova</description>
 
     <properties>
         <java.version>17</java.version>
