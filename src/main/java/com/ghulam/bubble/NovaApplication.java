@@ -9,10 +9,10 @@ import org.springframework.context.event.EventListener;
 import static com.ghulam.bubble.helper.AppSetting.LOGGER;
 
 @SpringBootApplication
-public class BubbleApplication {
+public class NovaApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(BubbleApplication.class, args);
+        SpringApplication.run(NovaApplication.class, args);
     }
 
     @EventListener(ApplicationReadyEvent.class)

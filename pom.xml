@@ -9,7 +9,7 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>com.ghulam</groupId>
-    <artifactId>bubble</artifactId>
+    <artifactId>nova</artifactId>
     <version>0.0.1</version>
     <name>bubble</name>
     <description>bubble</description>

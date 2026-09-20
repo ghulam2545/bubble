@@ -57,104 +57,111 @@ public class QueryRepository {
         }
     }
 
-    private boolean checkExtension() {
-        if (!isPgStatStatementsAvailable()) {
-            log.warn("pg_stat_statements extension is not available.");
-            return false;
-        }
-        return true;
-    }
-
     public List<QueryMetric> findQueries(QueryFilter filter) {
-        if (!checkExtension()) return Collections.emptyList();
+        if (isPgStatStatementsAvailable()) {
+            StringBuilder sql = new StringBuilder("SELECT * FROM pg_stat_statements WHERE 1=1");
+            MapSqlParameterSource params = new MapSqlParameterSource();
 
-        StringBuilder sql = new StringBuilder("SELECT * FROM pg_stat_statements WHERE 1=1");
-        MapSqlParameterSource params = new MapSqlParameterSource();
+            if (filter.minDuration() != null) {
+                sql.append(" AND total_exec_time >= :minDuration");
+                params.addValue("minDuration", filter.minDuration());
+            }
+            if (filter.minCalls() != null) {
+                sql.append(" AND calls >= :minCalls");
+                params.addValue("minCalls", filter.minCalls());
+            }
 
-        if (filter.minDuration() != null) {
-            sql.append(" AND total_exec_time >= :minDuration");
-            params.addValue("minDuration", filter.minDuration());
+            String sortCol = filter.sort() != null && !filter.sort().isEmpty() ? filter.sort() : "total_exec_time";
+            // Basic validation for sort column to prevent SQL injection
+            if (!sortCol.matches("^[a-zA-Z0-9_]+$")) sortCol = "total_exec_time";
+
+            String order = "asc".equalsIgnoreCase(filter.order()) ? "ASC" : "DESC";
+
+            sql.append(" ORDER BY ").append(sortCol).append(" ").append(order);
+            sql.append(" LIMIT :limit OFFSET :offset");
+
+            params.addValue("limit", filter.limit());
+            params.addValue("offset", filter.offset());
+
+            return client.query(sql.toString(), params, queryMetricRowMapper);
         }
-        if (filter.minCalls() != null) {
-            sql.append(" AND calls >= :minCalls");
-            params.addValue("minCalls", filter.minCalls());
-        }
-
-        String sortCol = filter.sort() != null && !filter.sort().isEmpty() ? filter.sort() : "total_exec_time";
-        // Basic validation for sort column to prevent SQL injection
-        if (!sortCol.matches("^[a-zA-Z0-9_]+$")) sortCol = "total_exec_time";
-
-        String order = "asc".equalsIgnoreCase(filter.order()) ? "ASC" : "DESC";
-
-        sql.append(" ORDER BY ").append(sortCol).append(" ").append(order);
-        sql.append(" LIMIT :limit OFFSET :offset");
-
-        params.addValue("limit", filter.limit());
-        params.addValue("offset", filter.offset());
-
-        return client.query(sql.toString(), params, queryMetricRowMapper);
+        return Collections.emptyList();
     }
 
     public long countQueries(QueryFilter filter) {
-        if (!checkExtension()) return 0;
+        if (isPgStatStatementsAvailable()) {
+            StringBuilder sql = new StringBuilder("SELECT count(*) FROM pg_stat_statements WHERE 1=1");
+            MapSqlParameterSource params = new MapSqlParameterSource();
 
-        StringBuilder sql = new StringBuilder("SELECT count(*) FROM pg_stat_statements WHERE 1=1");
-        MapSqlParameterSource params = new MapSqlParameterSource();
+            if (filter.minDuration() != null) {
+                sql.append(" AND total_exec_time >= :minDuration");
+                params.addValue("minDuration", filter.minDuration());
+            }
+            if (filter.minCalls() != null) {
+                sql.append(" AND calls >= :minCalls");
+                params.addValue("minCalls", filter.minCalls());
+            }
 
-        if (filter.minDuration() != null) {
-            sql.append(" AND total_exec_time >= :minDuration");
-            params.addValue("minDuration", filter.minDuration());
+            Long count = client.queryForObject(sql.toString(), params, Long.class);
+            return count != null ? count : 0L;
         }
-        if (filter.minCalls() != null) {
-            sql.append(" AND calls >= :minCalls");
-            params.addValue("minCalls", filter.minCalls());
-        }
-
-        Long count = client.queryForObject(sql.toString(), params, Long.class);
-        return count != null ? count : 0L;
+        return 0;
     }
 
     public Optional<QueryMetric> findById(long queryId) {
-        if (!checkExtension()) return Optional.empty();
-
-        String sql = "SELECT * FROM pg_stat_statements WHERE queryid = :queryId";
-        List<QueryMetric> results = client.query(sql, new MapSqlParameterSource("queryId", queryId), queryMetricRowMapper);
-        return results.isEmpty() ? Optional.empty() : Optional.of(results.get(0));
+        if (isPgStatStatementsAvailable()) {
+            String sql = "SELECT * FROM pg_stat_statements WHERE queryid = :queryId";
+            List<QueryMetric> results = client.query(sql, new MapSqlParameterSource("queryId", queryId), queryMetricRowMapper);
+            return results.isEmpty() ? Optional.empty() : Optional.of(results.get(0));
+        }
+        return Optional.empty();
     }
 
     public List<QueryMetric> findTopQueries(int limit) {
-        if (!checkExtension()) return Collections.emptyList();
-        String sql = "SELECT * FROM pg_stat_statements ORDER BY total_exec_time DESC LIMIT :limit";
-        return client.query(sql, new MapSqlParameterSource("limit", limit), queryMetricRowMapper);
+        if (isPgStatStatementsAvailable()) {
+            String sql = "SELECT * FROM pg_stat_statements ORDER BY total_exec_time DESC LIMIT :limit";
+            return client.query(sql, new MapSqlParameterSource("limit", limit), queryMetricRowMapper);
+        }
+        return Collections.emptyList();
     }
 
     public List<QueryMetric> findSlowQueries(int limit) {
-        if (!checkExtension()) return Collections.emptyList();
-        String sql = "SELECT * FROM pg_stat_statements ORDER BY mean_exec_time DESC LIMIT :limit";
-        return client.query(sql, new MapSqlParameterSource("limit", limit), queryMetricRowMapper);
+        if (isPgStatStatementsAvailable()) {
+            String sql = "SELECT * FROM pg_stat_statements ORDER BY mean_exec_time DESC LIMIT :limit";
+            return client.query(sql, new MapSqlParameterSource("limit", limit), queryMetricRowMapper);
+        }
+        return Collections.emptyList();
     }
 
     public List<QueryMetric> findMostFrequentQueries(int limit) {
-        if (!checkExtension()) return Collections.emptyList();
-        String sql = "SELECT * FROM pg_stat_statements ORDER BY calls DESC LIMIT :limit";
-        return client.query(sql, new MapSqlParameterSource("limit", limit), queryMetricRowMapper);
+        if (isPgStatStatementsAvailable()) {
+            String sql = "SELECT * FROM pg_stat_statements ORDER BY calls DESC LIMIT :limit";
+            return client.query(sql, new MapSqlParameterSource("limit", limit), queryMetricRowMapper);
+        }
+        return Collections.emptyList();
     }
 
     public List<QueryMetric> findTopIoQueries(int limit) {
-        if (!checkExtension()) return Collections.emptyList();
-        String sql = "SELECT * FROM pg_stat_statements ORDER BY (shared_blks_read + shared_blks_written + temp_blks_read + temp_blks_written) DESC LIMIT :limit";
-        return client.query(sql, new MapSqlParameterSource("limit", limit), queryMetricRowMapper);
+        if (isPgStatStatementsAvailable()) {
+            String sql = "SELECT * FROM pg_stat_statements ORDER BY (shared_blks_read + shared_blks_written + temp_blks_read + temp_blks_written) DESC LIMIT :limit";
+            return client.query(sql, new MapSqlParameterSource("limit", limit), queryMetricRowMapper);
+        }
+        return Collections.emptyList();
     }
 
     public List<QueryMetric> findTopCpuQueries(int limit) {
-        if (!checkExtension()) return Collections.emptyList();
-        String sql = "SELECT * FROM pg_stat_statements ORDER BY (total_exec_time / NULLIF(calls, 0)) DESC LIMIT :limit";
-        return client.query(sql, new MapSqlParameterSource("limit", limit), queryMetricRowMapper);
+        if (isPgStatStatementsAvailable()) {
+            String sql = "SELECT * FROM pg_stat_statements ORDER BY (total_exec_time / NULLIF(calls, 0)) DESC LIMIT :limit";
+            return client.query(sql, new MapSqlParameterSource("limit", limit), queryMetricRowMapper);
+        }
+        return Collections.emptyList();
     }
 
     public List<QueryMetric> findTopTempQueries(int limit) {
-        if (!checkExtension()) return Collections.emptyList();
-        String sql = "SELECT * FROM pg_stat_statements ORDER BY (temp_blks_read + temp_blks_written) DESC LIMIT :limit";
-        return client.query(sql, new MapSqlParameterSource("limit", limit), queryMetricRowMapper);
+        if (isPgStatStatementsAvailable()) {
+            String sql = "SELECT * FROM pg_stat_statements ORDER BY (temp_blks_read + temp_blks_written) DESC LIMIT :limit";
+            return client.query(sql, new MapSqlParameterSource("limit", limit), queryMetricRowMapper);
+        }
+        return Collections.emptyList();
     }
 }
