@@ -3,18 +3,18 @@ package com.ghulam.nova.dtos;
 import lombok.Builder;
 
 @Builder
-public class TableMetadata {
-    private String schema;
-    private String table;
-    private String owner;
-    private String relkind;
-    private String persistence;
-    private long rowsEstimate;
-    private String tableSize;
-    private String indexSize;
-    private String totalSize;
-    private boolean hasIndexes;
-    private boolean hasTriggers;
-    private boolean isPartitioned;
-    private boolean isPartition;
+public record TableMetadata(
+        String schema,
+        String table,
+        String owner,
+        String relkind,
+        String persistence,
+        long rowsEstimate,
+        String tableSize,
+        String indexSize,
+        String totalSize,
+        boolean hasIndexes,
+        boolean hasTriggers,
+        boolean isPartitioned,
+        boolean isPartition) {
 }
