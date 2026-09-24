@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <link rel="icon" type="image/png" th:href="@{/favicon.png}"/>
+    <title>Extensions — Nova</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" th:href="@{/css/styles.css}"/>
+</head>
+<body class="min-h-screen" data-page="extensions">
+<div class="app-shell">
+    <div th:replace="~{fragments/layout :: sidebar}"></div>
+    <main class="main-content">
+
+        <header class="topbar">
+            <div class="topbar-left">
+                <span class="topbar-title">Extensions</span>
+                <span class="topbar-sub">Installed &amp; available PostgreSQL extensions</span>
+            </div>
+            <div class="topbar-actions">
+                <button class="btn btn-primary btn-sm" onclick="Nova.openModal('connect-modal')">Connect</button>
+            </div>
+        </header>
+
+        <div class="page-body">
+            <div class="card" id="ext-tabs">
+                <div class="tab-bar">
+                    <div class="tab" data-tab="installed">Installed</div>
+                    <div class="tab" data-tab="available">Available</div>
+                </div>
+
+                <!-- Installed -->
+                <div class="tab-panel" data-tab="installed">
+                    <div class="data-table-wrap">
+                        <table class="data-table">
+                            <thead><tr>
+                                <th>Name</th>
+                                <th>Version</th>
+                                <th>Schema</th>
+                                <th>Relocatable</th>
+                                <th>Comment</th>
+                            </tr></thead>
+                            <tbody id="ext-installed-body">
+                            <tr><td colspan="5" class="text-muted" style="padding:20px;text-align:center">Not connected</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Available -->
+                <div class="tab-panel" data-tab="available">
+                    <div class="data-table-wrap">
+                        <table class="data-table">
+                            <thead><tr>
+                                <th>Name</th>
+                                <th>Default Version</th>
+                                <th>Comment</th>
+                            </tr></thead>
+                            <tbody id="ext-available-body">
+                            <tr><td colspan="3" class="text-muted" style="padding:20px;text-align:center">Not connected</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+
+<div th:replace="~{fragments/layout :: connect-modal}"></div>
+<script th:src="@{/js/nova.js}"></script>
+<script th:src="@{/js/extensions.js}"></script>
+</body>
+</html>

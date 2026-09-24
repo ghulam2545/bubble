@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <link rel="icon" type="image/png" th:href="@{/favicon.png}"/>
+    <title>Indexes — Nova</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" th:href="@{/css/styles.css}"/>
+</head>
+<body class="min-h-screen" data-page="indexes">
+<div class="app-shell">
+    <div th:replace="~{fragments/layout :: sidebar}"></div>
+    <main class="main-content">
+
+        <header class="topbar">
+            <div class="topbar-left">
+                <span class="topbar-title">Indexes</span>
+                <span class="topbar-sub">Index health, usage &amp; analysis</span>
+            </div>
+            <div class="topbar-actions">
+                <button class="btn btn-primary btn-sm" onclick="Nova.openModal('connect-modal')">Connect</button>
+            </div>
+        </header>
+
+        <div class="page-body">
+            <div class="card" id="idx-tabs">
+                <div class="tab-bar">
+                    <div class="tab" data-tab="all">All Indexes</div>
+                    <div class="tab" data-tab="health">Health</div>
+                    <div class="tab" data-tab="unused">Unused</div>
+                    <div class="tab" data-tab="invalid">Invalid</div>
+                    <div class="tab" data-tab="duplicate">Duplicate</div>
+                    <div class="tab" data-tab="largest">Largest</div>
+                </div>
+
+                <!-- All -->
+                <div class="tab-panel" data-tab="all">
+                    <div class="data-table-wrap">
+                        <table class="data-table">
+                            <thead><tr>
+                                <th>Index</th><th>Schema</th><th>Table</th><th>Type</th>
+                                <th>Unique</th><th>Size</th><th>Scans</th>
+                            </tr></thead>
+                            <tbody id="idx-all-body">
+                            <tr><td colspan="7" class="text-muted" style="padding:20px;text-align:center">Not connected</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Health -->
+                <div class="tab-panel" data-tab="health">
+                    <div class="data-table-wrap">
+                        <table class="data-table">
+                            <thead><tr>
+                                <th>Index</th><th>Schema</th><th>Table</th><th>Status</th>
+                                <th>Size</th><th>Scans</th><th>Issues</th>
+                            </tr></thead>
+                            <tbody id="idx-health-body">
+                            <tr><td colspan="7" class="text-muted" style="padding:20px;text-align:center">Not connected</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Unused -->
+                <div class="tab-panel" data-tab="unused">
+                    <div class="data-table-wrap">
+                        <table class="data-table">
+                            <thead><tr>
+                                <th>Index</th><th>Schema</th><th>Table</th><th>Type</th><th>Size</th><th>Scans</th>
+                            </tr></thead>
+                            <tbody id="idx-unused-body">
+                            <tr><td colspan="6" class="text-muted" style="padding:20px;text-align:center">Not connected</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Invalid -->
+                <div class="tab-panel" data-tab="invalid">
+                    <div class="data-table-wrap">
+                        <table class="data-table">
+                            <thead><tr>
+                                <th>Index</th><th>Schema</th><th>Table</th><th>Type</th><th>Size</th>
+                            </tr></thead>
+                            <tbody id="idx-invalid-body">
+                            <tr><td colspan="5" class="text-muted" style="padding:20px;text-align:center">Not connected</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Duplicate -->
+                <div class="tab-panel" data-tab="duplicate">
+                    <div class="data-table-wrap">
+                        <table class="data-table">
+                            <thead><tr>
+                                <th>Index</th><th>Schema</th><th>Table</th><th>Columns</th><th>Size</th>
+                            </tr></thead>
+                            <tbody id="idx-duplicate-body">
+                            <tr><td colspan="5" class="text-muted" style="padding:20px;text-align:center">Not connected</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Largest -->
+                <div class="tab-panel" data-tab="largest">
+                    <div class="data-table-wrap">
+                        <table class="data-table">
+                            <thead><tr>
+                                <th>Index</th><th>Schema</th><th>Table</th><th>Type</th><th>Size</th><th>Scans</th>
+                            </tr></thead>
+                            <tbody id="idx-largest-body">
+                            <tr><td colspan="6" class="text-muted" style="padding:20px;text-align:center">Not connected</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+
+<div th:replace="~{fragments/layout :: connect-modal}"></div>
+<script th:src="@{/js/nova.js}"></script>
+<script th:src="@{/js/indexes.js}"></script>
+</body>
+</html>

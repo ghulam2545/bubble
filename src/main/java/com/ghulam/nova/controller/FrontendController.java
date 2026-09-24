@@ -40,5 +40,15 @@ public class FrontendController {
     public String activity() {
         return "activity";
     }
+
+    @GetMapping("/extensions")
+    public String extensions() {
+        return "extensions";
+    }
+
+    @GetMapping("/indexes")
+    public String indexes() {
+        return "indexes";
+    }
 }
 
