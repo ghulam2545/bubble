@@ -50,5 +50,10 @@ public class FrontendController {
     public String indexes() {
         return "indexes";
     }
+
+    @GetMapping("/functions")
+    public String functions() {
+        return "functions";
+    }
 }
 

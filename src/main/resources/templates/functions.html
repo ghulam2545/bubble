@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <link rel="icon" type="image/png" th:href="@{/favicon.png}"/>
+    <title>Functions — Nova</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" th:href="@{/css/styles.css}"/>
+</head>
+<body class="min-h-screen" data-page="functions">
+<div class="app-shell">
+    <div th:replace="~{fragments/layout :: sidebar}"></div>
+    <main class="main-content">
+
+        <header class="topbar">
+            <div class="topbar-left">
+                <span class="topbar-title">Functions</span>
+                <span class="topbar-sub">PostgreSQL stored functions &amp; procedures</span>
+            </div>
+            <div class="topbar-actions">
+                <button class="btn btn-primary btn-sm" onclick="Nova.openModal('connect-modal')">Connect</button>
+            </div>
+        </header>
+
+        <div class="page-body">
+            <div class="card">
+                <div class="card-header" style="display:flex;align-items:center;gap:12px;padding:14px 18px">
+                    <label class="form-label" style="margin:0;white-space:nowrap">Schema</label>
+                    <select id="fn-schema-filter" class="form-input" style="max-width:200px">
+                        <option value="">All schemas</option>
+                    </select>
+                </div>
+                <div class="data-table-wrap">
+                    <table class="data-table">
+                        <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Schema</th>
+                            <th>Language</th>
+                            <th>Return Type</th>
+                            <th>Arguments</th>
+                            <th>Type</th>
+                            <th>Volatile</th>
+                        </tr>
+                        </thead>
+                        <tbody id="fn-body">
+                        <tr>
+                            <td colspan="7" class="text-muted" style="padding:20px;text-align:center">Not connected</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div id="fn-pagination" class="pagination" style="display:none"></div>
+            </div>
+        </div>
+    </main>
+</div>
+
+<div th:replace="~{fragments/layout :: connect-modal}"></div>
+<script th:src="@{/js/nova.js}"></script>
+<script th:src="@{/js/functions.js}"></script>
+</body>
+</html>
