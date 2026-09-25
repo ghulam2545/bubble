@@ -3,11 +3,11 @@ package com.ghulam.nova.repo;
 import com.ghulam.nova.dtos.PartitionInfo;
 import com.ghulam.nova.service.DatabaseClient;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
-@Service
+@Repository
 public class PartitionRepository {
 
     private final DatabaseClient client;
