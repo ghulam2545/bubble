@@ -17,31 +17,31 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(DatabaseException.class)
     public ResponseEntity<ApiError> handleDatabaseException(DatabaseException ex, HttpServletRequest request) {
-        log.error("Database error", ex);
+        log.error("[DatabaseException] {} {} → {}", request.getMethod(), request.getRequestURI(), ex.getMessage(), ex);
         return buildErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, "Database Error", ex.getMessage(), request);
     }
 
     @ExceptionHandler(QueryExecutionException.class)
     public ResponseEntity<ApiError> handleQueryExecutionException(QueryExecutionException ex, HttpServletRequest request) {
-        log.error("Query execution error: {}", ex.getSql(), ex);
+        log.error("[QueryExecutionException] {} {} | sql='{}' → {}", request.getMethod(), request.getRequestURI(), ex.getSql(), ex.getMessage(), ex);
         return buildErrorResponse(HttpStatus.BAD_REQUEST, "Query Execution Error", ex.getMessage(), request);
     }
 
     @ExceptionHandler(InvalidSqlException.class)
     public ResponseEntity<ApiError> handleInvalidSqlException(InvalidSqlException ex, HttpServletRequest request) {
-        log.error("Invalid SQL error", ex);
+        log.error("[InvalidSqlException] {} {} → {}", request.getMethod(), request.getRequestURI(), ex.getMessage(), ex);
         return buildErrorResponse(HttpStatus.BAD_REQUEST, "Invalid SQL", ex.getMessage(), request);
     }
 
     @ExceptionHandler(ResourceNotFoundException.class)
     public ResponseEntity<ApiError> handleResourceNotFoundException(ResourceNotFoundException ex, HttpServletRequest request) {
-        log.warn("Resource not found", ex);
+        log.warn("[ResourceNotFoundException] {} {} → {}", request.getMethod(), request.getRequestURI(), ex.getMessage());
         return buildErrorResponse(HttpStatus.NOT_FOUND, "Resource Not Found", ex.getMessage(), request);
     }
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ApiError> handleGenericException(Exception ex, HttpServletRequest request) {
-        log.error("Unhandled exception", ex);
+        log.error("[UnhandledException] {} {} → {}", request.getMethod(), request.getRequestURI(), ex.getMessage(), ex);
         return buildErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, "Internal Server Error", "An unexpected error occurred", request);
     }
 
