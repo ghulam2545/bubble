@@ -85,4 +85,9 @@ public class DatabaseClient {
         return connectionService.jdbc()
                 .query(sql, params, rowMapper);
     }
+
+    @SuppressWarnings("SqlSourceToSinkFlow")
+    public void execute(String sql) {
+        connectionService.jdbc().getJdbcOperations().execute(sql);
+    }
 }
