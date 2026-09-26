@@ -7,6 +7,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Service;
 
+import static com.ghulam.nova.helper.AppSetting.LOGGER;
+
 @Slf4j
 @Service
 public class ConnectionService {
@@ -16,13 +18,15 @@ public class ConnectionService {
 
     public synchronized void connect(DatabaseConfig config) {
         String jdbcUrl = "jdbc:postgresql://%s:%d/%s".formatted(config.host(), config.port(), config.database());
+        String username = config.username();
+        String password = config.password();
 
-        log.info("Connecting to Postgres --> {} as '{}'", jdbcUrl, config.username());
+        LOGGER(String.format("Connecting to Postgres --> %s as %s", jdbcUrl, username));
 
         HikariDataSource newDataSource = new HikariDataSource();
         newDataSource.setJdbcUrl(jdbcUrl);
-        newDataSource.setUsername(config.username());
-        newDataSource.setPassword(config.password());
+        newDataSource.setUsername(username);
+        newDataSource.setPassword(password);
 
         try {
             NamedParameterJdbcTemplate newJdbcTemplate = new NamedParameterJdbcTemplate(newDataSource);
@@ -40,14 +44,14 @@ public class ConnectionService {
             this.jdbcTemplate = newJdbcTemplate;
             if (oldDataSource != null) {
                 oldDataSource.close();
-                log.debug("Previous database connection closed");
+                LOGGER("Previous database connection closed.");
             }
 
-            log.info("Connected to '{}' successfully", config.database());
+            LOGGER(String.format("Connected to '%s' successfully.", config.database()));
         } catch (Exception e) {
             // New connection failed, so clean it up.
             newDataSource.close();
-            log.error("Failed to connect to PostgreSQL database '{}'", config.database(), e);
+            LOGGER(String.format("Failed to connect to '%s' successfully.", config.database()));
             throw new IllegalStateException("Failed to connect to database: " + config.database(), e);
         }
     }
@@ -65,7 +69,7 @@ public class ConnectionService {
     @PreDestroy
     public synchronized void disconnect() {
         if (dataSource != null && !dataSource.isClosed()) {
-            log.info("Closing database connection");
+            LOGGER("Closing database connection.");
 
             dataSource.close();
             dataSource = null;
