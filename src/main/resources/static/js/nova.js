@@ -144,11 +144,18 @@ const Nova = (() => {
                 password: form.password.value
             };
             try {
-                await fetch('/connect', {
+                const response = await fetch('/connect', {
                     method: 'POST',
                     headers: {'Content-Type': 'application/json'},
                     body: JSON.stringify(cfg)
                 });
+
+                if (!response.ok) {
+                    const message = await response.text();
+                    toast(`Connection failed: ${message || 'Server error'}`, 'error');
+                    return;
+                }
+
                 saveConn(cfg);
                 closeModal('connect-modal');
                 toast('Connected successfully — loading…', 'success');
@@ -229,7 +236,6 @@ const Nova = (() => {
 
 
     return {
-        saveConn,
         getConn,
         isConnected,
         apiFetch,
