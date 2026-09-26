@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <link rel="icon" type="image/png" th:href="@{/favicon.png}"/>
+    <title>Tables — Nova</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" th:href="@{/css/styles.css}"/>
+</head>
+<body class="min-h-screen" data-page="tables">
+<div class="app-shell">
+    <div th:replace="~{fragments/layout :: sidebar}"></div>
+    <main class="main-content">
+
+        <header class="topbar">
+            <div class="topbar-left">
+                <span class="topbar-title">Tables</span>
+                <span class="topbar-sub">Browse tables, columns &amp; constraints</span>
+            </div>
+            <div class="topbar-actions">
+                <select class="form-input" id="tables-schema-filter" style="width:160px">
+                    <option value="">All schemas</option>
+                </select>
+                <input class="form-input" id="tables-search" type="text" placeholder="Filter tables…" style="width:180px"/>
+                <button class="btn btn-primary btn-sm" onclick="Nova.openModal('connect-modal')">Connect</button>
+            </div>
+        </header>
+
+        <div class="page-body">
+
+            <!-- Summary cards -->
+            <div class="stat-grid">
+                <div class="stat-card" style="--ac:#818cf8">
+                    <div class="stat-label">Total Tables</div>
+                    <div class="stat-value" id="tbl-total">—</div>
+                    <div class="stat-hint">in selected schema</div>
+                </div>
+                <div class="stat-card" style="--ac:#34d399">
+                    <div class="stat-label">With Indexes</div>
+                    <div class="stat-value" id="tbl-indexed">—</div>
+                    <div class="stat-hint">tables with at least 1 index</div>
+                </div>
+                <div class="stat-card" style="--ac:#f59e0b">
+                    <div class="stat-label">Partitioned</div>
+                    <div class="stat-value" id="tbl-partitioned">—</div>
+                    <div class="stat-hint">parent partition tables</div>
+                </div>
+                <div class="stat-card" style="--ac:#60a5fa">
+                    <div class="stat-label">With Triggers</div>
+                    <div class="stat-value" id="tbl-triggers">—</div>
+                    <div class="stat-hint">tables with triggers</div>
+                </div>
+            </div>
+
+            <!-- Tables list -->
+            <div class="card" style="margin-top:20px">
+                <div class="card-header">
+                    <div class="card-title">All Tables</div>
+                    <div id="tables-pagination" style="display:none"></div>
+                </div>
+                <div class="data-table-wrap">
+                    <table class="data-table">
+                        <thead>
+                        <tr>
+                            <th>Schema</th>
+                            <th>Table</th>
+                            <th>Rows (est.)</th>
+                            <th>Table Size</th>
+                            <th>Index Size</th>
+                            <th>Total Size</th>
+                            <th>Indexes</th>
+                            <th>Triggers</th>
+                            <th>Partitioned</th>
+                        </tr>
+                        </thead>
+                        <tbody id="tables-body">
+                        <tr>
+                            <td colspan="9" class="text-muted" style="padding:20px;text-align:center">Not connected</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </div>
+    </main>
+</div>
+
+<!-- Table detail modal -->
+<div id="table-detail-modal" class="modal-overlay">
+    <div class="modal" style="max-width:800px">
+        <div class="modal-header">
+            <div>
+                <span class="modal-title" id="table-detail-title">Table Detail</span>
+                <span id="table-detail-size" style="margin-left:10px;font-size:11px;color:var(--text-muted)"></span>
+            </div>
+            <button type="button" class="btn btn-ghost btn-sm btn-icon"
+                    onclick="Nova.closeModal('table-detail-modal')" style="font-size:16px;line-height:1">&#x2715;
+            </button>
+        </div>
+
+        <!-- Tabs inside modal -->
+        <div id="table-detail-tabs" style="border-bottom:1px solid var(--border)">
+            <div class="tab-bar" style="padding:0 16px;border-bottom:none">
+                <div class="tab" data-tab="columns">Columns</div>
+                <div class="tab" data-tab="constraints">Constraints</div>
+                <div class="tab" data-tab="size">Size</div>
+            </div>
+        </div>
+
+        <div class="modal-body" style="padding:0;max-height:60vh;overflow-y:auto">
+
+            <!-- Columns tab -->
+            <div class="tab-panel" data-tab="columns">
+                <div class="data-table-wrap">
+                    <table class="data-table">
+                        <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Column</th>
+                            <th>Type</th>
+                            <th>Nullable</th>
+                            <th>Default</th>
+                            <th>Comment</th>
+                        </tr>
+                        </thead>
+                        <tbody id="detail-columns-body">
+                        <tr><td colspan="6" class="text-muted" style="padding:20px;text-align:center">Loading…</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Constraints tab -->
+            <div class="tab-panel" data-tab="constraints">
+                <div class="data-table-wrap">
+                    <table class="data-table">
+                        <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Type</th>
+                            <th>Columns</th>
+                            <th>Definition</th>
+                        </tr>
+                        </thead>
+                        <tbody id="detail-constraints-body">
+                        <tr><td colspan="4" class="text-muted" style="padding:20px;text-align:center">Loading…</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Size tab -->
+            <div class="tab-panel" data-tab="size">
+                <div style="padding:16px">
+                    <table class="data-table">
+                        <tbody id="detail-size-body">
+                        <tr><td colspan="2" class="text-muted" style="padding:20px;text-align:center">Loading…</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-ghost" onclick="Nova.closeModal('table-detail-modal')">Close</button>
+        </div>
+    </div>
+</div>
+
+<div th:replace="~{fragments/layout :: connect-modal}"></div>
+<script th:src="@{/js/nova.js}"></script>
+<script th:src="@{/js/tables.js}"></script>
+</body>
+</html>

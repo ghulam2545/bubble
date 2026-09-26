@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <link rel="icon" type="image/png" th:href="@{/favicon.png}"/>
+    <title>Vacuum — Nova</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" th:href="@{/css/styles.css}"/>
+</head>
+<body class="min-h-screen" data-page="vacuum">
+<div class="app-shell">
+    <div th:replace="~{fragments/layout :: sidebar}"></div>
+    <main class="main-content">
+
+        <header class="topbar">
+            <div class="topbar-left">
+                <span class="topbar-title">Vacuum</span>
+                <span class="topbar-sub">VACUUM &amp; ANALYZE management — dead tuples, bloat &amp; autovacuum status</span>
+            </div>
+            <div class="topbar-actions">
+                <select class="form-input" id="vacuum-schema-filter" style="width:160px">
+                    <option value="">All schemas</option>
+                </select>
+                <button class="btn btn-ghost btn-sm" onclick="VacuumPage.refresh()">Refresh</button>
+                <button class="btn btn-primary btn-sm" onclick="Nova.openModal('connect-modal')">Connect</button>
+            </div>
+        </header>
+
+        <div class="page-body">
+
+            <!-- Stat cards -->
+            <div class="stat-grid">
+                <div class="stat-card" style="--ac:#f87171">
+                    <div class="stat-label">Tables Needing Vacuum</div>
+                    <div class="stat-value" id="vac-need-count">—</div>
+                    <div class="stat-hint">dead tuples &gt; 10 000</div>
+                </div>
+                <div class="stat-card" style="--ac:#fbbf24">
+                    <div class="stat-label">Never Vacuumed</div>
+                    <div class="stat-value" id="vac-never-count">—</div>
+                    <div class="stat-hint">no vacuum history</div>
+                </div>
+                <div class="stat-card" style="--ac:#34d399">
+                    <div class="stat-label">Active Vacuum Jobs</div>
+                    <div class="stat-value" id="vac-active-count">—</div>
+                    <div class="stat-hint">running right now</div>
+                </div>
+                <div class="stat-card" style="--ac:#818cf8">
+                    <div class="stat-label">Total Tables</div>
+                    <div class="stat-value" id="vac-total-count">—</div>
+                    <div class="stat-hint">in selected schema</div>
+                </div>
+            </div>
+
+            <!-- Active vacuum progress -->
+            <div class="card" style="margin-top:20px" id="vac-progress-card">
+                <div class="card-header">
+                    <div class="card-title">Active Vacuum Operations</div>
+                    <span style="font-size:11px;color:var(--text-muted)">Auto-refreshed every 5s when jobs are running</span>
+                </div>
+                <div class="data-table-wrap">
+                    <table class="data-table">
+                        <thead>
+                        <tr>
+                            <th>PID</th>
+                            <th>Database</th>
+                            <th>Relation</th>
+                            <th>Phase</th>
+                            <th>Heap Scanned</th>
+                            <th>Heap Vacuumed</th>
+                            <th>Dead Tuples</th>
+                        </tr>
+                        </thead>
+                        <tbody id="vac-progress-body">
+                        <tr>
+                            <td colspan="7" class="text-muted" style="padding:20px;text-align:center">Not connected</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Tables needing vacuum -->
+            <div class="card" style="margin-top:16px">
+                <div class="card-header">
+                    <div>
+                        <div class="card-title">Table Vacuum Status</div>
+                        <div class="card-subtitle">Tables sorted by dead tuples descending</div>
+                    </div>
+                </div>
+                <div class="data-table-wrap">
+                    <table class="data-table">
+                        <thead>
+                        <tr>
+                            <th>Schema</th>
+                            <th>Table</th>
+                            <th>Live Tuples</th>
+                            <th>Dead Tuples</th>
+                            <th>Bloat</th>
+                            <th>Last Vacuum</th>
+                            <th>Last Autovacuum</th>
+                            <th>Last Analyze</th>
+                            <th>Actions</th>
+                        </tr>
+                        </thead>
+                        <tbody id="vac-tables-body">
+                        <tr>
+                            <td colspan="9" class="text-muted" style="padding:20px;text-align:center">Not connected</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </div>
+    </main>
+</div>
+
+<div th:replace="~{fragments/layout :: connect-modal}"></div>
+<script th:src="@{/js/nova.js}"></script>
+<script th:src="@{/js/vacuum.js}"></script>
+</body>
+</html>

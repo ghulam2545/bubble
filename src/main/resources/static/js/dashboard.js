@@ -123,3 +123,29 @@ document.addEventListener('DOMContentLoaded', async () => {
     loadChart();
     loadLargestRelations();
 });
+
+// Reload all dashboard data when user connects mid-session
+document.addEventListener('nova:connected', () => {
+    Promise.all([
+        fetch('/backend/api/v1/statistics/database').then(r => r.ok ? r.json() : null).catch(() => null),
+        fetch('/backend/api/v1/storage/database').then(r => r.ok ? r.json() : null).catch(() => null),
+        fetch('/backend/api/v1/activity/active').then(r => r.ok ? r.json() : null).catch(() => null),
+    ]).then(([stats, storage, activity]) => {
+        // stat cards
+        const dbName = document.getElementById('stat-db-name');
+        const totalSize = document.getElementById('stat-size');
+        const activeConns = document.getElementById('stat-connections');
+        const cacheHit = document.getElementById('stat-cache-hit');
+        const deadlocks = document.getElementById('stat-deadlocks');
+        const tps = document.getElementById('stat-tps');
+
+        if (stats) {
+            if (dbName) dbName.textContent = stats.databaseName || '—';
+            if (activeConns) activeConns.textContent = stats.numbackends ?? '—';
+            if (cacheHit) cacheHit.textContent = stats.cacheHitRatio != null ? (stats.cacheHitRatio * 100).toFixed(1) + '%' : '—';
+            if (deadlocks) deadlocks.textContent = stats.deadlocks != null ? Number(stats.deadlocks).toLocaleString() : '—';
+            if (tps) tps.textContent = stats.xactCommit != null ? Number(stats.xactCommit).toLocaleString() : '—';
+        }
+        if (storage && totalSize) totalSize.textContent = storage.totalSize || '—';
+    }).catch(() => {});
+});

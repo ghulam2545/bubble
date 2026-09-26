@@ -55,5 +55,15 @@ public class FrontendController {
     public String functions() {
         return "functions";
     }
+
+    @GetMapping("/vacuum")
+    public String vacuum() {
+        return "vacuum";
+    }
+
+    @GetMapping("/tables")
+    public String tables() {
+        return "tables";
+    }
 }
 

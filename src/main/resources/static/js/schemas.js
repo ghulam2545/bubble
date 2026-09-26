@@ -1,9 +1,9 @@
-document.addEventListener('DOMContentLoaded', async () => {
-
-    const tableBody = document.getElementById('schemas-table-body');
+document.addEventListener('nova:connected', loadSchemas);
+document.addEventListener('DOMContentLoaded', () => {
+    const tableBody  = document.getElementById('schemas-table-body');
     const detailPane = document.getElementById('schema-detail');
-    const filterInp = document.getElementById('schema-filter');
-    const sysToggle = document.getElementById('include-system');
+    const filterInp  = document.getElementById('schema-filter');
+    const sysToggle  = document.getElementById('include-system');
 
     let allSchemas = [];
 
@@ -53,7 +53,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         detailPane.classList.remove('hidden');
         document.getElementById('detail-schema-name').textContent = name;
 
-        // init tabs
+        // re-init tabs every open (fresh click)
         Nova.initTabs(detailPane);
 
         // load sub-resources in parallel
@@ -64,20 +64,22 @@ document.addEventListener('DOMContentLoaded', async () => {
             try {
                 const items = await Nova.apiFetch(`/schemas/${name}/${endpoint}`);
                 if (!items.length) {
-                    el.innerHTML = `<div class="empty-label text-muted">${emptyMsg}</div>`;
+                    el.innerHTML = `<div class="empty-label text-muted" style="padding:12px 0;font-size:12px">${emptyMsg}</div>`;
                     return;
                 }
-                el.innerHTML = items.map(i => `<div class="mono" style="padding:5px 0;border-bottom:1px solid var(--border);font-size:12px">${i}</div>`).join('');
+                el.innerHTML = items.map(i =>
+                    `<div class="mono" style="padding:5px 0;border-bottom:1px solid var(--border);font-size:12px">${i}</div>`
+                ).join('');
             } catch {
                 el.innerHTML = '<div class="text-error" style="font-size:12px">Failed to load</div>';
             }
         };
 
-        loadList('tables', 'detail-tables', 'No tables');
-        loadList('views', 'detail-views', 'No views');
+        loadList('tables',    'detail-tables',    'No tables');
+        loadList('views',     'detail-views',     'No views');
         loadList('sequences', 'detail-sequences', 'No sequences');
         loadList('functions', 'detail-functions', 'No functions');
-        loadList('types', 'detail-types', 'No types');
+        loadList('types',     'detail-types',     'No types');
     }
 
     // ── Filter ─────────────────────────────────────────────────────────────
@@ -88,5 +90,31 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     sysToggle?.addEventListener('change', loadSchemas);
 
-    loadSchemas();
+    if (Nova.isConnected()) loadSchemas();
+});
+
+// Also reload when connected mid-session
+document.addEventListener('nova:connected', () => {
+    const sysToggle = document.getElementById('include-system');
+    const includeSystem = sysToggle?.checked || false;
+    Nova.apiFetch(`/schemas?includeSystem=${includeSystem}`).then(data => {
+        window._schemasAllSchemas = data;
+        // re-render using the table body
+        const tableBody = document.getElementById('schemas-table-body');
+        if (!tableBody) return;
+        if (!data.length) {
+            tableBody.innerHTML = `<tr><td colspan="6"><div class="empty-state"><div class="empty-icon">◻</div><div class="empty-label">No schemas found</div></div></td></tr>`;
+            return;
+        }
+        tableBody.innerHTML = data.map(s => `
+            <tr class="schema-row" data-name="${s.name}" style="cursor:pointer">
+                <td class="mono">${s.name}</td>
+                <td>${s.owner || '—'}</td>
+                <td>${s.tablesCount ?? '—'}</td>
+                <td>${s.viewsCount ?? '—'}</td>
+                <td>${s.sequencesCount ?? '—'}</td>
+                <td>${s.totalSize || '—'}</td>
+            </tr>
+        `).join('');
+    }).catch(() => {});
 });
